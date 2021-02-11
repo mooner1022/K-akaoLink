@@ -1,6 +1,7 @@
 # K-akaoLink
 
 [![](https://jitpack.io/v/mooner1022/K-akaoLink.svg)](https://jitpack.io/#mooner1022/K-akaoLink)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/mooner1022/K-akaoLink/blob/main/LICENSE)
 
 KakaoLink Module implemented for Java/Kotlin
 
