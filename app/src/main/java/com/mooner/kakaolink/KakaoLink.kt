@@ -25,7 +25,7 @@ class KakaoLink(
         kakaoStatic += URLEncoder.encode(location,"utf-8")
     }
 
-    fun login(email:String,pw:String) {
+    fun login(email:String,pw:String,onLoginSuccess:(()->Unit)? = null) {
         val loginResponse = Jsoup.connect("https://sharer.kakao.com/talk/friends/picker/link").apply {
             data("app_key",apiKey)
             data("validation_action","default")
@@ -79,6 +79,7 @@ class KakaoLink(
                                 "_karmtea" to response.cookie("_karmtea")
                             )
                         )
+                        if (onLoginSuccess!=null) onLoginSuccess()
                     }
                     else -> throw Error("로그인 도중 에러가 발생했습니다. ${response.body()}")
                 }
