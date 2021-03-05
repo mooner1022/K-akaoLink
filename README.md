@@ -16,7 +16,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.github.mooner1022:K-akaoLink:1.0.0'
+    implementation 'com.github.mooner1022:K-akaoLink:1.1.0'
 }
 ```
 
