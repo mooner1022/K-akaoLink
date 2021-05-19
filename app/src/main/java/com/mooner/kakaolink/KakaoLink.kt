@@ -10,12 +10,12 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 
 class KakaoLink(
-    private val apiKey:String,
-    location:String
+    private val apiKey: String,
+    location: String
 ) {
-    private var kakaoStatic:String = "sdk/1.36.6 os/javascript lang/en-US device/Win32 origin/"
-    private lateinit var cookies:HashMap<String,String>
-    private lateinit var referrer:String
+    private var kakaoStatic: String = "sdk/1.36.6 os/javascript lang/en-US device/Win32 origin/"
+    private lateinit var cookies: HashMap<String, String>
+    private lateinit var referrer: String
 
     init {
         if (apiKey.length != 32) throw IllegalArgumentException("API KEY 의 길이가 올바르지 않습니다.")
@@ -24,7 +24,7 @@ class KakaoLink(
         kakaoStatic += URLEncoder.encode(location,"utf-8")
     }
 
-    fun login(email:String,pw:String,onLoginSuccess:(()->Unit)? = null) {
+    fun login(email: String, pw: String, onLoginSuccess: (() -> Unit)? = null) {
         val loginResponse = Jsoup.connect("https://sharer.kakao.com/talk/friends/picker/link").apply {
             data("app_key",apiKey)
             data("validation_action","default")
@@ -44,7 +44,7 @@ class KakaoLink(
                 cookies = hashMapOf(
                     "_kadu" to loginResponse.cookie("_kadu"),
                     "_kadub" to loginResponse.cookie("_kadub"),
-                    "_maldive_oauth_webapp_session" to loginResponse.cookie("_maldive_oauth_webapp_session"),
+                    "_maldive_oauth_webapp_session_key" to loginResponse.cookie("_maldive_oauth_webapp_session_key"),
                     "TIARA" to Jsoup.connect("https://track.tiara.kakao.com/queen/footsteps")
                         .ignoreContentType(true)
                         .execute()
@@ -87,15 +87,15 @@ class KakaoLink(
         }
     }
 
-    fun send(room:String,params:KakaoParams,type:String?) {
+    fun send(room: String, params: KakaoParams, type: String?) {
         val response = Jsoup.connect("https://sharer.kakao.com/talk/friends/picker/link").apply {
             referrer(referrer)
-            cookies(cookies.filter { it.key in arrayOf("TIARA","_kawlt","_kawltea","_karmt","_karmtea") })
+            cookies(cookies.filter { it.key in arrayOf("TIARA", "_kawlt", "_kawltea", "_karmt", "_karmtea") })
             data("app_key",apiKey)
             data("validation_action", type ?: "default")
-            data("validation_params",Json.encodeToString(params))
-            data("ka",kakaoStatic)
-            data("lcba","")
+            data("validation_params", Json.encodeToString(params))
+            data("ka", kakaoStatic)
+            data("lcba", "")
             ignoreHttpErrors(true)
             method(Connection.Method.POST)
         }.execute()
@@ -111,8 +111,8 @@ class KakaoLink(
                 val csrfToken = doc.select("div").last().attr("ng-init").split("'")[1]
                 val chats = Json.decodeFromString<Chats>(Jsoup.connect("https://sharer.kakao.com/api/talk/chats").apply {
                     referrer("https://sharer.kakao.com/talk/friends/picker/link")
-                    header("Csrf-Token",csrfToken)
-                    header("App-Key",apiKey)
+                    header("Csrf-Token", csrfToken)
+                    header("App-Key", apiKey)
                     cookies(cookies)
                     ignoreContentType(true)
                 }.execute().body())
@@ -133,7 +133,7 @@ class KakaoLink(
                     header("Csrf-Token",csrfToken)
                     header("App-Key",apiKey)
                     header("Content-Type","application/json")
-                    cookies(cookies.filter { it.key in arrayOf("KSHARER","TIARA","using","_kadu","_kadub","_kawlt","_kawltea","_karmt","_karmtea") })
+                    cookies(cookies.filter { it.key in arrayOf("KSHARER", "TIARA", "using", "_kadu", "_kadub", "_kawlt", "_kawltea", "_karmt", "_karmtea") })
                     requestBody(requestBody)
                     ignoreContentType(true)
                     ignoreHttpErrors(true)
@@ -144,5 +144,5 @@ class KakaoLink(
         }
     }
 
-    private fun encrypt(value:String,key:String):String = AESCipher.encrypt(value, key).toString()
+    private fun encrypt(value: String, key: String): String = AESCipher.encrypt(value, key).toString()
 }
